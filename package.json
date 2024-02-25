@@ -34,8 +34,8 @@
     "vite": "^5.1.0"
   },
   "polkadot-api": {
-    "assetHub": {
-      "metadata": "asset-hub-metadata.scale",
+    "polkadotAssetHub": {
+      "metadata": "polkadot-asset-hub-metadata.scale",
       "outputFolder": "./src/codegen/"
     }
   },

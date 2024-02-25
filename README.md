@@ -1,3 +1,4 @@
-# Westend Asset Hub Polkadot-API test
+# Polkadot Asset Hub Polkadot-API test
 
-Transacting with JOE TEST TOKENS and paying transaction fees in JOE TEST TOKENS, no WND required!
+- [ ] Type '{ parents: number; interior: XcmV3Junctions; }' is not assignable to type 'number'
+- [ ] TransactionError: TxError: invalid - Invalid transaction: BadProof

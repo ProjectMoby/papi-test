@@ -10,15 +10,15 @@ import assetHubTypes, {
   MultiAddress,
   XcmV3Junctions,
   XcmV3Junction,
-} from "./codegen/assetHub"
-import assetHubChainspec from "./asset-hub"
+} from "./codegen/polkadotAssetHub"
+import assetHubChainspec from "./polkadot-asset-hub"
 
-const ASSET_ID = 8
+const ASSET_ID = 1984 //USDT
 
 const scProvider = createScClient()
 const { relayChains, connectAccounts } = getLegacyProvider(scProvider)
 
-const assetHub = await relayChains.westend2.getParachain(assetHubChainspec)
+const assetHub = await relayChains.polkadot.getParachain(assetHubChainspec)
 const client = createClient(assetHub.connect, { assets: assetHubTypes })
 
 const ExtensionSelector: React.FC = () => {
@@ -72,26 +72,26 @@ const ExtensionSelector: React.FC = () => {
 
 const App: React.FC<{ accounts: Account[] }> = ({ accounts }) => {
   const [account, setAccount] = useState(accounts[0])
-  const [joeBalance, setJoeBalance] = useState<bigint | null>(null)
-  const [wndFreeBalance, setWndFreeBalance] = useState<bigint | null>(null)
-  const [recipientAddress, setRecipientAddress] = useState(
-    "5ELXt7N4gPpN4d1E5c4wKyYhZFCaSDiH5zUxuWsgY4SNrPW5",
-  )
+  const [assetBalance, setAssetBalance] = useState<bigint | null>(null)
+  const [nativeTokenFreeBalance, setNativeTokenFreeBalance] = useState<
+    bigint | null
+  >(null)
+  const [recipientAddress, setRecipientAddress] = useState("")
   const [amount, setAmount] = useState("")
   useEffect(() => {
-    setJoeBalance(null)
+    setAssetBalance(null)
     const subscription = client.assets.query.Assets.Account.watchValue(
       ASSET_ID,
       account.address,
     ).subscribe((assetAccount) => {
-      setJoeBalance(assetAccount?.balance ?? 0n)
+      setAssetBalance(assetAccount?.balance ?? 0n)
     })
 
-    setWndFreeBalance(null)
+    setNativeTokenFreeBalance(null)
     subscription.add(
       client.assets.query.System.Account.watchValue(account.address).subscribe(
         (account) => {
-          setWndFreeBalance(account.data.free ?? 0n)
+          setNativeTokenFreeBalance(account.data.free ?? 0n)
         },
       ),
     )
@@ -108,6 +108,7 @@ const App: React.FC<{ accounts: Account[] }> = ({ accounts }) => {
       target: MultiAddress.Id(recipientAddress),
     })
       .submit$(account.address, {
+        // asset: ASSET_ID,
         asset: {
           parents: 0,
           interior: XcmV3Junctions.X2([
@@ -123,14 +124,16 @@ const App: React.FC<{ accounts: Account[] }> = ({ accounts }) => {
     <>
       <div>
         <label>
-          WND Free Balance:{" "}
-          {wndFreeBalance === null ? "Loading..." : wndFreeBalance.toString()}
+          {JSON.parse(assetHubChainspec).properties.tokenSymbol} Free Balance:{" "}
+          {nativeTokenFreeBalance === null
+            ? "Loading..."
+            : nativeTokenFreeBalance.toString()}
         </label>
       </div>
       <div>
         <label>
-          JOE Balance:{" "}
-          {joeBalance === null ? "Loading..." : joeBalance.toString()}
+          USDT Balance:{" "}
+          {assetBalance === null ? "Loading..." : assetBalance.toString()}
         </label>
       </div>
 
